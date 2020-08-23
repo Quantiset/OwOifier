@@ -92,12 +92,11 @@ async def on_message(message):
         data["username"] = str(message.author.name)
         data["avatar_url"] = str(message.author.avatar_url)
 
-        #if message.author.id == 277250557696147457:
-        #    return
+        if not message.author.id == 277250557696147457:
 
-        result = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})  #posting the message
+            result = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})  #posting the message
 
-        await message.delete() #deleting OG message
+            await message.delete() #deleting OG message
     else:
         pass
 
