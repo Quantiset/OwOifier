@@ -1,4 +1,3 @@
-import discord
 import json
 import requests
 import urllib3
@@ -6,6 +5,7 @@ import random
 import os
 import asyncio
 import time
+import discord
 
 from discord.ext import commands
 os.chdir("/home/ryon/code/python/owoifier/")
@@ -50,7 +50,7 @@ async def on_message(message):
     
     if str(message.channel.id) in data: #solely for passives
         if data[str(message.channel.id)]["passive"]["enabled"]: #updates passives if there is a passive
-            if random.randrange(0, data[str(message.channel.id)]["passive"]["chance"]) == 1:
+            if random.random() < data[str(message.channel.id)]["passive"]["chance"]):
                 if not str(message.author.id) in data[str(message.channel.id)]["passive"]["members"]: #checking to see if person is already in passive
                     if data[str(message.channel.id)]["passive"]["TBA"] != 0:
                         data[str(message.channel.id)]["passive"]["members"][str(message.author.id)] = round(time.time())  #puts person in list with time that it was put in list for
@@ -89,24 +89,27 @@ async def on_message(message):
 
         data = {} #creating the message
         data["content"] = furryto(str(message.content))
-        data["username"] = str(message.author.name)
+        data["username"] = str(message.author.display_name)
         data["avatar_url"] = str(message.author.avatar_url)
 
-        if not message.author.id == 277250557696147457:
+        #if message.author.id == 277250557696147457:
+        #    return
 
-            result = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})  #posting the message
+        result = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})  #posting the message
 
-            await message.delete() #deleting OG message
+        await message.delete() #deleting OG message
     else:
         pass
+
+while i < 1000:
 
 
 def furryto(message):
 
     
-    message = message.replace("r", "w"); message = message.replace("R", "W")
-    message = message.replace("v", "w"); message = message.replace("V", "W")
-    message = message.replace("l", "w"); message = message.replace("L", "W")
+    message = message.replace("r", "w"); message = message.replace("R", "W"); message = message.replace("🇷", "🇼")
+    message = message.replace("v", "w"); message = message.replace("V", "W"); message = message.replace("🇻", "🇼")
+    message = message.replace("l", "w"); message = message.replace("L", "W"); message = message.replace("🇱", "🇼")
     message = message.replace("ought", "ot"); message = message.replace("OUGHT", "OT")
     message = message.replace("'", "")
     
@@ -397,13 +400,16 @@ async def create_passive(ctx, channel: discord.TextChannel, chance, TBA):
     
 
     chance = int(chance)
-    if chance < 2:
-        await ctx.send("chance should be a number greater than 1. Do note that the chance is the denominator in the probability, so a greater number reduces likelihood of OwOification.")
+    if chance > 1:
+        await ctx.send("chance should be a float. the higher the value is (closer to 1), the higher of a chance it is.")
+        return
+    elif chance < 0:
+        await ctx.send("chance should be greater than zero. Now what is negative chance supposed to mean?")
         return
 
     try:
         TBA = int(TBA)
-        if (TBA <= 10) and (TBA != 0):
+        if (TBA <= 10):
             await ctx.send("your duration should be greater than 5 seconds. Alternatively, if you only want one message owoified, set it to 0.")
             return
         if TBA > 999:
