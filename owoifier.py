@@ -50,7 +50,7 @@ async def on_message(message):
     
     if str(message.channel.id) in data: #solely for passives
         if data[str(message.channel.id)]["passive"]["enabled"]: #updates passives if there is a passive
-            if random.random() < data[str(message.channel.id)]["passive"]["chance"]):
+            if random.random() < data[str(message.channel.id)]["passive"]["chance"]:
                 if not str(message.author.id) in data[str(message.channel.id)]["passive"]["members"]: #checking to see if person is already in passive
                     if data[str(message.channel.id)]["passive"]["TBA"] != 0:
                         data[str(message.channel.id)]["passive"]["members"][str(message.author.id)] = round(time.time())  #puts person in list with time that it was put in list for
@@ -100,8 +100,6 @@ async def on_message(message):
         await message.delete() #deleting OG message
     else:
         pass
-
-while i < 1000:
 
 
 def furryto(message):
