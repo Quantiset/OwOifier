@@ -17,4 +17,4 @@ Linux:
 5) Invite it to your server(s)!
 Go to OAuth2, tick bot, give it sufficient perms (standard read, write, edit, manage messages and webhooks). Copy the given link and click on to invite it to your server.
 5) Run it! If ya don't, it won't work!
-> python3 <location of owoifier file>
+> python3 [location of owoifier file]
