@@ -5,12 +5,12 @@ To host this bot for your server:
 
 1) Check to see if you have python3 installed (python3). If not, go to https://www.python.org/downloads/ and download it. It should work with most Python 3 versions
 2) Install discord.py + dependencies
-Windows: 
+- Windows: 
 >python3 -m pip install -U discord.py
 
 >python3 -m pip install -U requests
 
-Linux: 
+- Linux: 
 >pip3 install discord.py
 
 >pip3 install requests
