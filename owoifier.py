@@ -4,14 +4,15 @@ import random
 import os
 import asyncio
 import time
-import discord
+
+import discord 
 
 from discord.ext import commands
-os.chdir("/home/ryon/code/python/owoifier/")
+os.chdir("/home/ryon/code/python/owoifier/") #replace with your directory
 
 client = commands.Bot(command_prefix = 'owo ')
 
-bypass = True
+bypass = True 
 
 @client.event
 async def on_command_error(ctx, error):
@@ -91,15 +92,11 @@ async def on_message(message):
         data["username"] = str(message.author.display_name)
         data["avatar_url"] = str(message.author.avatar_url)
 
-        #if message.author.id == 277250557696147457:
-        #    return
-
         result = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})  #posting the message
 
         await message.delete() #deleting OG message
     else:
         pass
-
 
 def furryto(message):
 
@@ -134,7 +131,7 @@ async def ping(ctx):
     await ctx.send("Pong! `{}".format(round(client.latency * 1000)) + "ms`")
 
 @client.command()
-@commands.has_permissions(manage_webhooks = True)
+@commands.has_permissions()
 async def setup_channel(ctx, channel: discord.TextChannel):
 
 
@@ -172,10 +169,20 @@ async def setup_channel(ctx, channel: discord.TextChannel):
 @client.event
 async def on_ready():
     print("bot ready")
-    bypass = False
+    # the code i used to change everyone's name lol. 
 
-@client.command(manage_webhooks = True)
-@commands.has_permissions(manage_webhooks = True)
+    #while True:
+    #    for member in client.get_guild(741368605316218900).members:
+    #        try:
+    #            if member.display_name != "Awwah Awkbawr":
+    #                await member.edit(nick="Awwah Awkbawr")
+    #        except:
+    #            pass
+    #asyncio.sleep(0.1) # so your computer doesn't use up ram like I use up my life
+
+
+@client.command()
+@commands.has_permissions()
 async def remove_channel(ctx, channel: discord.TextChannel):
 
 
@@ -194,8 +201,8 @@ async def remove_channel(ctx, channel: discord.TextChannel):
 
     await ctx.send("Successfully removed webhook. Was it not fun for you?")
 
-@client.command(manage_webhooks = True)
-@commands.has_permissions(manage_webhooks = True)
+@client.command()
+@commands.has_permissions()
 async def update_channel(ctx, channel: discord.TextChannel, _if_all):
 
     channel = channel.id
@@ -224,8 +231,8 @@ async def update_channel(ctx, channel: discord.TextChannel, _if_all):
 
     await ctx.send("Successfully updated settings for this channel")
 
-@client.command(manage_webhooks = True)
-@commands.has_permissions(manage_webhooks = True)
+@client.command()
+@commands.has_permissions()
 async def update_roles(ctx, channel: discord.TextChannel, exempt, *, role: discord.Role):
     with open("channels.json", "r") as f:
         data = json.load(f)
@@ -271,8 +278,8 @@ async def update_roles(ctx, channel: discord.TextChannel, exempt, *, role: disco
         await ctx.send("Make sure you enter a valid role that your server already has!")
         return
 
-@client.command(manage_webhooks = True)
-@commands.has_permissions(manage_webhooks = True)
+@client.command()
+@commands.has_permissions()
 async def remove_roles(ctx, channel: discord.TextChannel, *, role: discord.Role):
     with open("channels.json", "r") as f:
         data = json.load(f)
@@ -301,42 +308,63 @@ async def remove_roles(ctx, channel: discord.TextChannel, *, role: discord.Role)
     with open("channels.json", "w") as f:
         json.dump(data, f)
 
-@client.command(manage_webhooks = True)
-@commands.has_permissions(manage_webhooks = True)
-async def update_members_for(ctx, channel: discord.TextChannel, *people: discord.Member):
-
-    channel = channel.id
-
+@client.command()
+@commands.has_permissions()
+async def update_members_for(ctx, channel: discord.TextChannel, timez, *people: discord.Member):
+    
+    try:
+        channel = channel.id
+        timez = int(timez)
+    except:
+        await ctx.send("Please send in a valid time (-1 is infinite) and a proper channel. Note that the time goes first.")
+        return
+    
     persons = []
     for person in people:
         persons.append(str(person.id))
-
+    
     people = persons
     with open("channels.json", "r") as f:
         data = json.load(f)
+    
+    if (timez <= 0) and (not timez == -1):
+        await ctx.send("Please input a time greater than 0. Inputting -1 makes it not automatically remove itself.")
+        return
+    elif (timez != -1) and (timez % 5 != 0):
+        await ctx.send("your time will be rounded to the nearest multiple of 5 since the bot only updates every 5 seconds.")
+    if timez > 9999999:
+        await ctx.send("your time should also be less than 10000000 seconds (115 days). Wouldn't want us having too much fun, now do we?")
+        return
 
     if str(channel) in data:
         pass
     else:
         await ctx.send("Make sure you have a valid channel ID and that you first configure your channel using `owo setup_channel [channel]")
         return
-    
+
     for person in people:
         if client.get_user(int(person)) == None:
             await ctx.send("Please enter valid user IDs")
             return
         
-        data[str(channel)]["allowed_members"][str(person)] = str(person)
+        if timez > 0: #if not default value
+            data[str(channel)]["allowed_members"][str(person)] = (round(time.time()) + timez)
+        else:
+            data[str(channel)]["allowed_members"][str(person)] = -1
+        
     
     data[str(channel)]["if_all"] = "false"
 
     with open("channels.json", "w") as f:
         json.dump(data, f)
     
-    await ctx.send("Successfully updated allowed people for this channel")
+    if timez == -1:
+        await ctx.send("Successfully updated allowed people for this channel")
+    else:
+        await ctx.send(f"Successfully updated allowed person(s) {persons} with time {timez}")
 
 @client.command()
-@commands.has_permissions(manage_webhooks = True)
+@commands.has_permissions()
 async def remove_members_for(ctx, channel: discord.TextChannel, *people: discord.Member):
 
 
@@ -370,7 +398,7 @@ async def remove_members_for(ctx, channel: discord.TextChannel, *people: discord
     await ctx.send("Successfully updated allowed people for this channel")
 
 @client.command()
-@commands.has_permissions(manage_webhooks = True)
+@commands.has_permissions()
 async def check_integrity(ctx, channel: discord.TextChannel):
     with open("channels.json", "r") as f:
         data = json.load(f)
@@ -390,13 +418,12 @@ async def check_integrity(ctx, channel: discord.TextChannel):
         await ctx.send("Channel is not set up")
 
 @client.command()
-@commands.has_permissions(manage_webhooks = True)
+@commands.has_permissions()
 async def create_passive(ctx, channel: discord.TextChannel, chance, TBA):
     with open("channels.json", "r") as f:
         data = json.load(f)
     
-
-    chance = int(chance)
+    chance = float(chance)
     if chance > 1:
         await ctx.send("chance should be a float. the higher the value is (closer to 1), the higher of a chance it is.")
         return
@@ -409,8 +436,8 @@ async def create_passive(ctx, channel: discord.TextChannel, chance, TBA):
         if (TBA <= 10):
             await ctx.send("your duration should be greater than 5 seconds. Alternatively, if you only want one message owoified, set it to 0.")
             return
-        if TBA > 999:
-            await ctx.send("your duration should also be less than 1000 seconds (17 minutes). Wouldn't want us having too much fun, now do we?")
+        if TBA > 9999999:
+            await ctx.send("your duration should also be less than 10000000 seconds (115 days). Wouldn't want us having too much fun, now do we?")
             return
         if TBA % 5 != 0:
             await ctx.send("your duration will be rounded to the nearest multiple of 5 since the bot only updates every 5 seconds.")
@@ -422,7 +449,7 @@ async def create_passive(ctx, channel: discord.TextChannel, chance, TBA):
     data[str(channel.id)]["passive"]["chance"] = chance
     data[str(channel.id)]["passive"]["TBA"] = TBA
 
-    await ctx.send(f"Channel is now setup with chance 1/{chance} and Duration {TBA} seconds.")
+    await ctx.send(f"Channel is now setup with chance {chance} and Duration {TBA} seconds.")
 
     with open("channels.json", "w") as f:
         json.dump(data, f)
@@ -474,7 +501,7 @@ async def pp(ctx):
     string += 'D'
     await ctx.send(string)
 
-async def update_passive():
+async def update_members():
     await client.wait_until_ready()
 
     coro = True
@@ -487,11 +514,17 @@ async def update_passive():
                 for person in list(data[chan]["passive"]["members"]):
                     if int(data[chan]["passive"]["members"][person]) <= (round(time.time()) - data[chan]["passive"]["TBA"]):
                         del data[chan]["passive"]["members"][person]
+        
+        for chan in data:
+            for person in list(data[chan]["allowed_members"]):
+                if data[chan]["allowed_members"][person] != -1:
+                    if data[chan]["allowed_members"][person] <= round(time.time()):
+                        del data[chan]["allowed_members"][person]
 
         with open("channels.json", 'w') as f:
             json.dump(data, f)
 
         await asyncio.sleep(5)
 
-client.loop.create_task(update_passive())
+client.loop.create_task(update_members())
 client.run("TOKEN")
