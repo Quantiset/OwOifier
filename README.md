@@ -1,6 +1,10 @@
 # OwOifier
 Best Bot
 
+To invite this bot:
+https://discordapp.com/api/oauth2/authorize?client_id=701192860355002478&permissions=604105824&scope=bot
+
+
 To host this bot for your server:
 
 1) Check to see if you have python3 installed (python3). If not, go to https://www.python.org/downloads/ and download it. It should work with most Python 3 versions
