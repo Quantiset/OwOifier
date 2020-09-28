@@ -11,7 +11,7 @@ Windows:
 >python3 -m pip install -U requests
 
 Linux: 
->pip install discord.py;
+>pip install discord.py
 
 >pip install requests
 3) Replace the os.chdir("") with your folder containing both the json file and the py file. Make sure it's inside of the quotation marks
